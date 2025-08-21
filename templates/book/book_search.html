@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}書籍検索{% endblock %}
+{% block h1 %}書籍検索{% endblock %}
+
+{% block content %}
+<form method="get" class="mb-4">
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">検索する</button>
+</form>
+
+{% if form.is_bound %}
+    {% if results %}
+        <ul class="list-unstyled">
+        {% for book in results %}
+            <li class="mb-4 p-3 bg-light border rounded d-flex gap-3 align-items-start">
+                {% if book.thumbnail %}
+                    <div style="width: 120px; flex: 0 0 120px;">
+                        <img src="{{ book.thumbnail.url }}" alt="{{ book.title }}" class="img-thumbnail w-100" />
+                    </div>
+                {% endif %}
+                <div class="flex-grow-1">
+                    <a href="{% url 'detail-book' book.pk %}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <strong>{{ book.title }}</strong>
+                    </a>
+                    <div class="text-muted small">カテゴリ：{{ book.category }}</div>
+                    <div class="mt-1">{{ book.text|truncatewords:20 }}</div>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>該当する書籍は見つかりませんでした。</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

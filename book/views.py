@@ -5,7 +5,24 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Avg
 from django.core.paginator import Paginator
+from django.shortcuts import render
+from django.db.models import Q  # ← これを追加
+from .forms import BookSearchForm
 
+def book_search(request):
+    form = BookSearchForm(request.GET or None)
+    results = []
+
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        results = Shelf.objects.filter(
+            Q(title__icontains=query) | Q(text__icontains=query)
+        )
+
+    return render(request, 'book/book_search.html', {
+        'form': form,
+        'results': results
+    })
 class ListBookView(generic.ListView):
     template_name = 'book/book_list.html'
     model = Shelf
